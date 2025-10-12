@@ -371,7 +371,7 @@
     </div>
 
     <footer>
-        Created by Tech StudyCell
+        Dhadak
     </footer>
 
     <!-- Firebase SDK -->
@@ -415,16 +415,23 @@
 
         // Set canvas size
         function resizeCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         }
-        resizeCanvas();
+        
+        // Ensure canvas is properly sized
+        setTimeout(() => {
+            resizeCanvas();
+            console.log('Canvas size:', canvas.width, canvas.height);
+        }, 100);
+        
         window.addEventListener('resize', resizeCanvas);
 
-        // Listen to Firebase Realtime Database
-        const heartRateRef = ref(database, 'heartRate');
+        // Listen to Firebase Realtime Database - Read from /readings and get the latest entry
+        const readingsRef = ref(database, 'readings');
         
-        onValue(heartRateRef, (snapshot) => {
+        onValue(readingsRef, (snapshot) => {
             const data = snapshot.val();
             
             if (data !== null) {
@@ -435,22 +442,37 @@
                     statusDot.classList.add('connected');
                 }
 
-                // Get BPM value - adjust this based on your data structure
-                bpm = typeof data === 'object' ? (data.bpm || data.value || 0) : data;
+                // Get the latest BPM from the most recent entry
+                let latestBpm = 0;
+                let latestTimestamp = 0;
                 
-                // Update display
-                bpmValue.textContent = bpm;
-                updateLED(bpm);
-                updateBuzzer(bpm);
-                updateStatus(bpm);
+                // Iterate through all readings to find the most recent one
+                for (let key in data) {
+                    if (data[key].bpm && data[key].timestamp) {
+                        if (data[key].timestamp > latestTimestamp) {
+                            latestTimestamp = data[key].timestamp;
+                            latestBpm = data[key].bpm;
+                        }
+                    }
+                }
                 
-                // Update last update time
-                const now = new Date();
-                lastUpdate.textContent = `Last Update: ${now.toLocaleTimeString()}`;
+                if (latestBpm > 0) {
+                    bpm = latestBpm;
+                    
+                    // Update display
+                    bpmValue.textContent = bpm;
+                    updateLED(bpm);
+                    updateBuzzer(bpm);
+                    updateStatus(bpm);
+                    
+                    // Update last update time
+                    const now = new Date();
+                    lastUpdate.textContent = `Last Update: ${now.toLocaleTimeString()}`;
+                }
             }
         }, (error) => {
             console.error('Firebase error:', error);
-            connectionStatus.textContent = 'Connection Error';
+            connectionStatus.textContent = 'Connection Error: ' + error.message;
             statusDot.classList.remove('connected');
             isConnected = false;
         });
@@ -545,24 +567,28 @@
 
         // Draw ECG graph
         function drawECG() {
+            // Clear canvas
             ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 
             // Draw grid
             ctx.strokeStyle = '#0a3d0a';
             ctx.lineWidth = 1;
             
-            for (let i = 0; i < canvas.width; i += 20) {
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+            
+            for (let i = 0; i < width; i += 20) {
                 ctx.beginPath();
                 ctx.moveTo(i, 0);
-                ctx.lineTo(i, canvas.height);
+                ctx.lineTo(i, height);
                 ctx.stroke();
             }
             
-            for (let i = 0; i < canvas.height; i += 20) {
+            for (let i = 0; i < height; i += 20) {
                 ctx.beginPath();
                 ctx.moveTo(0, i);
-                ctx.lineTo(canvas.width, i);
+                ctx.lineTo(width, i);
                 ctx.stroke();
             }
 
@@ -580,11 +606,11 @@
             ctx.lineWidth = 2;
             ctx.beginPath();
             
-            const yCenter = canvas.height / 2;
-            const yScale = canvas.height * 0.35;
+            const yCenter = height / 2;
+            const yScale = height * 0.35;
             
             for (let i = 0; i < dataPoints.length; i++) {
-                const x = (canvas.width / maxPoints) * i;
+                const x = (width / maxPoints) * i;
                 const y = yCenter - dataPoints[i] * yScale;
                 
                 if (i === 0) {
