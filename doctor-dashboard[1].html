@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - DHADAK</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+Pro:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: #f8f9fa;
+            color: #2c3e50;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #3498db;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand h1 {
+            font-family: 'Lora', serif;
+            font-size: 1.9em;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .role-badge {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: #fff;
+            padding: 7px 18px;
+            border-radius: 25px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .logout-btn {
+            padding: 11px 26px;
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .logout-btn:hover {
+            background: #bdc3c7;
+            transform: translateY(-1px);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .metric-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #95a5a6;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .metric-card.primary {
+            border-left-color: #3498db;
+        }
+
+        .metric-card.success {
+            border-left-color: #27ae60;
+        }
+
+        .metric-card.warning {
+            border-left-color: #f39c12;
+        }
+
+        .metric-card.danger {
+            border-left-color: #e74c3c;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .metric-title {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .metric-icon {
+            font-size: 1.5em;
+            opacity: 0.3;
+        }
+
+        .metric-value {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-family: 'Lora', serif;
+        }
+
+        .metric-label {
+            font-size: 0.95em;
+            color: #95a5a6;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .status-badge.green {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .status-badge.blue {
+            background: #d6eaf8;
+            color: #3498db;
+        }
+
+        .status-badge.orange {
+            background: #fdebd0;
+            color: #f39c12;
+        }
+
+        .status-badge.red {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        .main-panel {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .panel-title {
+            font-family: 'Lora', serif;
+            font-size: 1.6em;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .data-indicator {
+            padding: 8px 18px;
+            background: #ecf0f1;
+            border-radius: 25px;
+            font-size: 0.85em;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        .data-indicator.active {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .no-data-state {
+            text-align: center;
+            padding: 80px 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 100%);
+            border-radius: 14px;
+            border: 2px dashed #bdc3c7;
+        }
+
+        .no-data-state.hidden {
+            display: none;
+        }
+
+        .no-data-state .icon {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            opacity: 0.2;
+        }
+
+        .no-data-state h3 {
+            font-family: 'Lora', serif;
+            color: #7f8c8d;
+            font-size: 1.4em;
+            margin-bottom: 12px;
+        }
+
+        .no-data-state p {
+            color: #95a5a6;
+            font-size: 1em;
+        }
+
+        .ecg-container {
+            background: #000;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 350px;
+            display: none;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .ecg-container.active {
+            display: block;
+        }
+
+        canvas {
+            width: 100%;
+            height: 320px;
+            display: block;
+        }
+
+        .analysis-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .analysis-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .analysis-card h4 {
+            font-size: 0.95em;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .analysis-content {
+            font-size: 0.95em;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .alert-box {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: #fff;
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .alert-box.show {
+            display: block;
+        }
+
+        .alert-box strong {
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Check -->
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') !== 'true' || sessionStorage.getItem('role') !== 'doctor') {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="dashboard-header">
+        <div class="brand">
+            <h1>DHADAK</h1>
+            <span class="role-badge">Medical Professional</span>
+        </div>
+        <div class="header-actions">
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <div class="alert-box" id="alertBox">
+        <strong>MEDICAL ALERT:</strong> Patient showing tachycardia (heart rate &gt; 120 BPM). Immediate evaluation recommended.
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card primary">
+            <div class="metric-header">
+                <span class="metric-title">Heart Rate</span>
+                <span class="metric-icon"></span>
+            </div>
+            <div class="metric-value" id="bpmValue">--</div>
+            <div class="metric-label" id="bpmLabel">Waiting for data...</div>
+            <div class="status-badge blue" id="statusBadge">
+                <div class="status-dot"></div>
+                <span>Connecting...</span>
+            </div>
+        </div>
+
+        <div class="metric-card" id="rangeCard">
+            <div class="metric-header">
+                <span class="metric-title">Classification</span>
+                <span class="metric-icon"></span>
+            </div>
+            <div class="metric-value" style="font-size: 1.8em;" id="classification">STANDBY</div>
+            <div class="metric-label">Clinical assessment</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">Last Reading</span>
+                <span class="metric-icon"></span>
+            </div>
+            <div class="metric-value" style="font-size: 1.5em;" id="lastReading">--:--:--</div>
+            <div class="metric-label" id="readingAge">No data received</div>
+        </div>
+    </div>
+
+    <div class="main-panel">
+        <div class="panel-header">
+            <h2 class="panel-title">ECG Waveform Monitor</h2>
+            <span class="data-indicator" id="dataIndicator">WAITING FOR DATA</span>
+        </div>
+
+        <div class="no-data-state" id="noDataState">
+            <div class="icon">🏥</div>
+            <h3>Awaiting Patient Connection</h3>
+            <p>The ECG waveform will be displayed here once the patient's sensor begins transmitting data.</p>
+        </div>
+
+        <div class="ecg-container" id="ecgContainer">
+            <canvas id="ecgCanvas"></canvas>
+        </div>
+
+        <div class="analysis-section">
+            <div class="analysis-card">
+                <h4>Clinical Notes</h4>
+                <div class="analysis-content" id="clinicalNotes">
+                    Monitoring session initialized. Awaiting patient data for analysis.
+                </div>
+            </div>
+
+            <div class="analysis-card">
+                <h4>Recommended Action</h4>
+                <div class="analysis-content" id="recommendations">
+                    Continue monitoring. Alert will trigger if abnormal readings detected.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbase Widget -->
+    <script>
+    (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="q3mT33786ysXCTe22qldg";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+    </script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvSI5B_tCbVXaNJEejxFB4JGQSiJowht8",
+            authDomain: "mini-project-f834f.firebaseapp.com",
+            databaseURL: "https://mini-project-f834f-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mini-project-f834f",
+            storageBucket: "mini-project-f834f.firebasestorage.app",
+            messagingSenderId: "481113451467",
+            appId: "1:481113451467:web:e84154c1699fa35342e44e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const canvas = document.getElementById('ecgCanvas');
+        const ctx = canvas.getContext('2d');
+        const bpmValue = document.getElementById('bpmValue');
+        const bpmLabel = document.getElementById('bpmLabel');
+        const statusBadge = document.getElementById('statusBadge');
+        const classification = document.getElementById('classification');
+        const rangeCard = document.getElementById('rangeCard');
+        const lastReading = document.getElementById('lastReading');
+        const readingAge = document.getElementById('readingAge');
+        const dataIndicator = document.getElementById('dataIndicator');
+        const noDataState = document.getElementById('noDataState');
+        const ecgContainer = document.getElementById('ecgContainer');
+        const clinicalNotes = document.getElementById('clinicalNotes');
+        const recommendations = document.getElementById('recommendations');
+        const alertBox = document.getElementById('alertBox');
+
+        let bpm = 0;
+        let dataPoints = [];
+        const maxPoints = 500;
+        let hasData = false;
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+
+        setTimeout(() => {
+            resizeCanvas();
+        }, 100);
+        
+        window.addEventListener('resize', resizeCanvas);
+
+        const readingsRef = ref(database, 'readings');
+        
+        onValue(readingsRef, (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data !== null) {
+                if (!hasData) {
+                    hasData = true;
+                    noDataState.classList.add('hidden');
+                    ecgContainer.classList.add('active');
+                    dataIndicator.textContent = 'LIVE DATA';
+                    dataIndicator.classList.add('active');
+                }
+
+                let latestBpm = 0;
+                let latestTimestamp = 0;
+                
+                for (let key in data) {
+                    if (data[key].bpm && data[key].timestamp) {
+                        if (data[key].timestamp > latestTimestamp) {
+                            latestTimestamp = data[key].timestamp;
+                            latestBpm = data[key].bpm;
+                        }
+                    }
+                }
+                
+                if (latestBpm > 0) {
+                    bpm = latestBpm;
+                    bpmValue.textContent = bpm;
+                    
+                    const now = new Date();
+                    lastReading.textContent = now.toLocaleTimeString();
+                    readingAge.textContent = 'Just now';
+                    
+                    updateMedicalAssessment(bpm);
+                }
+            }
+        });
+
+        function updateMedicalAssessment(bpm) {
+            let classText, notes, recs, cardClass, badgeClass, badgeText;
+            
+            if (bpm < 60) {
+                classText = 'BRADYCARDIA';
+                notes = 'Patient presenting with bradycardia. Heart rate below normal resting range (60-100 BPM). May be normal for athletes or require further evaluation.';
+                recs = 'Monitor for symptoms of dizziness or fatigue. Consider ECG evaluation if symptomatic.';
+                cardClass = 'primary';
+                badgeClass = 'blue';
+                badgeText = 'Low Rate';
+                alertBox.classList.remove('show');
+            } else if (bpm < 100) {
+                classText = 'NORMAL';
+                notes = 'Patient heart rate within normal resting range (60-100 BPM). No immediate concerns detected.';
+                recs = 'Continue routine monitoring. No immediate action required.';
+                cardClass = 'success';
+                badgeClass = 'green';
+                badgeText = 'Normal Range';
+                alertBox.classList.remove('show');
+            } else if (bpm < 120) {
+                classText = 'ELEVATED';
+                notes = 'Slightly elevated heart rate detected. May be due to physical activity, stress, or anxiety. Monitor for persistence.';
+                recs = 'Observe patient. Check for recent activity or stressors. Re-assess in 15 minutes.';
+                cardClass = 'warning';
+                badgeClass = 'orange';
+                badgeText = 'Elevated';
+                alertBox.classList.remove('show');
+            } else {
+                classText = 'TACHYCARDIA';
+                notes = 'Patient presenting with tachycardia (>120 BPM). Elevated heart rate requires immediate clinical attention. Rule out arrhythmia, dehydration, infection, or cardiac event.';
+                recs = 'IMMEDIATE EVALUATION REQUIRED. Assess patient vital signs. Consider 12-lead ECG. Evaluate for underlying cause.';
+                cardClass = 'danger';
+                badgeClass = 'red';
+                badgeText = 'Critical';
+                alertBox.classList.add('show');
+            }
+            
+            classification.textContent = classText;
+            clinicalNotes.textContent = notes;
+            recommendations.textContent = recs;
+            bpmLabel.textContent = classText;
+            
+            rangeCard.className = 'metric-card ' + cardClass;
+            statusBadge.className = 'status-badge ' + badgeClass;
+            statusBadge.querySelector('span').textContent = badgeText;
+        }
+
+        function generateECGPoint(t) {
+            if (bpm === 0) return 0;
+            
+            const heartRate = bpm / 60;
+            const beatPosition = (t * heartRate) % 1;
+            
+            if (beatPosition < 0.08) {
+                return Math.sin(beatPosition * Math.PI / 0.08) * 0.15;
+            } else if (beatPosition < 0.12) {
+                return 0;
+            } else if (beatPosition < 0.18) {
+                const qrsPos = (beatPosition - 0.12) / 0.06;
+                if (qrsPos < 0.3) return -qrsPos * 0.3;
+                if (qrsPos < 0.5) return (qrsPos - 0.3) * 5;
+                return (1 - qrsPos) * 0.5;
+            } else if (beatPosition < 0.30) {
+                return 0;
+            } else if (beatPosition < 0.45) {
+                return Math.sin((beatPosition - 0.30) * Math.PI / 0.15) * 0.25;
+            }
+            return 0;
+        }
+
+        function drawECG() {
+            if (!hasData) {
+                requestAnimationFrame(drawECG);
+                return;
+            }
+
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+
+            ctx.strokeStyle = '#1a3d1a';
+            ctx.lineWidth = 1;
+            
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+            
+            for (let i = 0; i < width; i += 20) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, height);
+                ctx.stroke();
+            }
+            
+            for (let i = 0; i < height; i += 20) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(width, i);
+                ctx.stroke();
+            }
+
+            const t = Date.now() / 1000;
+            const value = generateECGPoint(t);
+            dataPoints.push(value);
+            
+            if (dataPoints.length > maxPoints) {
+                dataPoints.shift();
+            }
+
+            ctx.strokeStyle = bpm > 0 ? '#00ff00' : '#666666';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const yCenter = height / 2;
+            const yScale = height * 0.35;
+            
+            for (let i = 0; i < dataPoints.length; i++) {
+                const x = (width / maxPoints) * i;
+                const y = yCenter - dataPoints[i] * yScale;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+
+            requestAnimationFrame(drawECG);
+        }
+
+        drawECG();
+    </script>
+</body>
+</html>
