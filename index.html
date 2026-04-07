@@ -309,7 +309,7 @@
         </div>
 
         <div class="connection-info">
-            <p><strong>Live Data from ESP8266 + MAX30102/Pulse Sensor</strong></p>
+            <p><strong>Live Data from ESP8266 + MAX30102 Sensor</strong></p>
             <div class="connection-status">
                 <div class="status-dot" id="statusDot"></div>
                 <span id="connectionStatus">Connecting to Firebase...</span>
@@ -357,7 +357,7 @@
         <div class="data-flow">
             <h4>Data Flow Pipeline</h4>
             <div class="flow-chain">
-                <div class="flow-item">MAX30102/Pulse Sensor</div>
+                <div class="flow-item">MAX30102 Sensor</div>
                 <div class="flow-arrow">→</div>
                 <div class="flow-item">ESP8266</div>
                 <div class="flow-arrow">→</div>
@@ -377,6 +377,11 @@
             </i>    
         </h1>
     </footer>
+
+    <!-- Chatbase Widget -->
+    <script>
+    (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="q3mT33786ysXCTe22qldg";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+    </script>
 
     <!-- Firebase SDK -->
     <script type="module">
